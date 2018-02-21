@@ -1,44 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import requests
-import logging
-
 import sys
-from bs4 import BeautifulSoup
-from win10toast import ToastNotifier
 
-
-# log
-# logger = logging.getLogger(__name__)
-# logger.setLevel(level=logging.INFO)
-# handler = logging.FileHandler('weatherLog.txt', 'a', encoding='utf-8')
-# handler.setLevel(logging.INFO)
-# handler.setFormatter(logging.Formatter('%(asctime)s   %(message)s'))
-# logger.addHandler(handler)
-
-def get_logger(file_name):
-    logger = logging.getLogger(__name__)
-    logger.setLevel(level=logging.INFO)
-    handler = logging.FileHandler(file_name, 'a', encoding='utf-8')
-    handler.setLevel(logging.INFO)
-    handler.setFormatter(logging.Formatter('%(asctime)s   %(message)s'))
-    logger.addHandler(handler)
-    return logger
-
-
-def get_soup_from_url(url):
-    res = requests.get(url)
-    res.encoding = 'utf-8'
-    return BeautifulSoup(res.text, 'html.parser')
-
-
-def win10_notifier(weather_info, notify_duration=30):
-    toaster = ToastNotifier()
-    toaster.show_toast('天气提醒', weather_info, icon_path=None, duration=notify_duration, threaded=True)
+from myUtility import get_logger
+from myUtility import get_soup_from_url
+from myUtility import win10_notifier
 
 
 def get_weather_info(url):
     try:
+        file_logger = get_logger('weatherLog.txt')
         soup = get_soup_from_url(url)
         weather_result = str()
         temp_high = str()
@@ -58,7 +29,8 @@ def get_weather_info(url):
 
 
     except:
-        logger.exception('catch exception!!!')
+        file_logger.exception('catch exception!!!')
+    print(weather_result)
     return weather_result
 
 
@@ -67,4 +39,4 @@ if __name__ == '__main__':
     win10_notifier(weather_info, 60)
     logger = get_logger('weatherLog.txt')
     logger.info("\n%s", weather_info)
-
+    sys.exit()
